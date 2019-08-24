@@ -1,4 +1,5 @@
 import { Store, Action, AnyAction } from 'redux';
+import { CacheOptions } from '@wora/cache-persist';
 
 export type WrapStore = <S, A extends Action = AnyAction>(
   worker: Worker,
@@ -6,9 +7,13 @@ export type WrapStore = <S, A extends Action = AnyAction>(
   enhancer?: Function,
 ) => Store<S, A>;
 
-export type ExposeStore = <S, A extends Action = AnyAction>(
-  store: Store<S, A>,
-) => void;
+export type ExposeStore = <S>( exposeOptions : {
+  reducer?: any,
+  initialState?: S,
+  enhancer?: Function,
+  persistOptions?: CacheOptions
+}) => void;
 
 export const wrapStore: WrapStore;
 export const exposeStore: ExposeStore;
+export const exposePersistStore: ExposeStore;

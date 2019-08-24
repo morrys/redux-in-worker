@@ -1,2 +1,2 @@
 export { wrapStore } from './wrapStore';
-export { exposeStore } from './exposeStore';
+export { exposeStore, exposePersistStore } from './exposeStore';

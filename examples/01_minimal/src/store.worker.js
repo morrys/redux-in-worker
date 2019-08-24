@@ -1,5 +1,3 @@
-import { createStore } from 'redux';
-
 import { exposeStore } from 'redux-in-worker';
 
 export const initialState = { count: 0 };
@@ -14,6 +12,4 @@ const reducer = (state = initialState, action) => {
   }
 };
 
-const store = createStore(reducer);
-
-exposeStore(store);
+exposeStore({reducer, initialState});

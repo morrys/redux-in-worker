@@ -20,9 +20,9 @@
     "eslint": "eslint --ext .js,.ts,.tsx --ignore-pattern dist .",
     "jest": "jest",
     "tsc-test": "tsc --project . --noEmit",
-    "examples:minimal": "DIR=01_minimal EXT=js webpack-dev-server",
-    "examples:typescript": "DIR=02_typescript webpack-dev-server",
-    "examples:router": "DIR=03_router webpack-dev-server"
+    "examples:minimal": "cross-env DIR=01_minimal EXT=js webpack-dev-server",
+    "examples:typescript": "cross-env DIR=02_typescript webpack-dev-server",
+    "examples:router": "cross-env DIR=03_router webpack-dev-server"
   },
   "keywords": [
     "redux",
@@ -46,11 +46,13 @@
     "@types/react-router-dom": "^4.3.4",
     "@typescript-eslint/eslint-plugin": "^2.0.0",
     "@typescript-eslint/parser": "^2.0.0",
+    "@wora/cache-persist": "1.1.0",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.0.2",
     "babel-loader": "^8.0.6",
     "connected-react-router": "^6.5.2",
     "core-js": "^3.2.1",
+    "cross-env": "^5.2.0",
     "eslint": "^6.1.0",
     "eslint-config-airbnb": "^18.0.1",
     "eslint-plugin-import": "^2.18.2",

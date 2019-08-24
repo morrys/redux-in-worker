@@ -1,5 +1,9 @@
 /* eslint no-plusplus: 0 */
 
+import { createStore } from 'redux';
+import Cache from "@wora/cache-persist";
+import IDBStorage from '@wora/cache-persist/lib/idbstorage';
+
 export const PATCH_TYPE_CREATE_OBJECT = 1;
 export const PATCH_TYPE_DELETE_OBJECT = 2;
 export const PATCH_TYPE_RETURN_STATE = 3;
@@ -80,17 +84,54 @@ const createPatches = (state) => {
   return patches;
 };
 
-export const exposeStore = (store) => {
-  self.onmessage = (e) => {
-    const action = e.data;
-    if (typeof action.type === 'string') {
-      store.dispatch(action);
-    }
-  };
-  const listener = () => {
-    const patches = createPatches(store.getState());
-    self.postMessage(patches);
-  };
-  store.subscribe(listener);
-  listener(); // run once
+
+
+export const exposePersistStore = (exposeOptions) => {
+  const idbStorages = IDBStorage.create({
+    name: "redux-worker",
+    storeNames: ["persist"]
+  });
+  const idb = {
+    storage: idbStorages[0],
+    serialize: false,
+    ...persistOptions
+  }
+  
+  const { reducer, preloadedState, enhancer, persistOptions = idb } = exposeOptions;
+  exposeStore({ reducer, preloadedState, enhancer, persistOptions })
+}
+
+export const exposeStore = ({ reducer, preloadedState, enhancer, persistOptions = { disablePersist: true } }) => {
+
+  const cache = new Cache(persistOptions);
+
+  cache.restore().then(cache => {
+
+    const initialState = Object.keys(cache.getState()).length ? cache.getState() : preloadedState;
+    console.log("cache.getState()", cache.getState())
+    const store = createStore(reducer, initialState, enhancer)
+
+    self.onmessage = (e) => {
+      const action = e.data;
+      if (typeof action.type === 'string') {
+        store.dispatch(action);
+      }
+    };
+    const listener = () => {
+      const state = store.getState();
+      Object.keys(state).forEach(key => {
+        cache.set(key, state[key]).catch(error => console.log("error", error))
+      });
+
+      const patches = createPatches(state);
+      self.postMessage(patches);
+    };
+    store.subscribe(listener);
+    listener();
+
+  });
+
+
+
+
 };
